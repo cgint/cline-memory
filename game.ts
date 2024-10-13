@@ -33,7 +33,7 @@ class MemoryGame {
     }
 
     private flipCard(card: HTMLElement): void {
-        if (this.flippedCards.length < 2 && !this.flippedCards.some(c => c === card) && !card.classList.contains('flipped')) {
+        if (this.flippedCards.length < 2 && !this.isCardFlipped(card) && !card.classList.contains('flipped')) {
             card.textContent = this.cards[parseInt(card.dataset.index!)];
             card.classList.add('flipped');
             this.flippedCards.push(card);
@@ -44,11 +44,16 @@ class MemoryGame {
         }
     }
 
+    private isCardFlipped(card: HTMLElement): boolean {
+        return this.flippedCards.some(flippedCard => flippedCard === card);
+    }
+
     private checkMatch(): void {
         const [card1, card2] = this.flippedCards;
-        const isMatch = this.cards[parseInt(card1.dataset.index!)] === this.cards[parseInt(card2.dataset.index!)];
+        const index1 = parseInt(card1.dataset.index!);
+        const index2 = parseInt(card2.dataset.index!);
 
-        if (isMatch) {
+        if (this.cards[index1] === this.cards[index2]) {
             this.matchedPairs++;
             if (this.matchedPairs === this.cards.length / 2) {
                 alert('Congratulations! You won the game!');

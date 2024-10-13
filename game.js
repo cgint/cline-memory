@@ -36,7 +36,7 @@ var MemoryGame = /** @class */ (function () {
     };
     MemoryGame.prototype.flipCard = function (card) {
         var _this = this;
-        if (this.flippedCards.length < 2 && !this.flippedCards.some(function (c) { return c === card; }) && !card.classList.contains('flipped')) {
+        if (this.flippedCards.length < 2 && !this.isCardFlipped(card) && !card.classList.contains('flipped')) {
             card.textContent = this.cards[parseInt(card.dataset.index)];
             card.classList.add('flipped');
             this.flippedCards.push(card);
@@ -45,10 +45,14 @@ var MemoryGame = /** @class */ (function () {
             }
         }
     };
+    MemoryGame.prototype.isCardFlipped = function (card) {
+        return this.flippedCards.some(function (flippedCard) { return flippedCard === card; });
+    };
     MemoryGame.prototype.checkMatch = function () {
         var _a = this.flippedCards, card1 = _a[0], card2 = _a[1];
-        var isMatch = this.cards[parseInt(card1.dataset.index)] === this.cards[parseInt(card2.dataset.index)];
-        if (isMatch) {
+        var index1 = parseInt(card1.dataset.index);
+        var index2 = parseInt(card2.dataset.index);
+        if (this.cards[index1] === this.cards[index2]) {
             this.matchedPairs++;
             if (this.matchedPairs === this.cards.length / 2) {
                 alert('Congratulations! You won the game!');
