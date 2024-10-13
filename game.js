@@ -1,13 +1,21 @@
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var MemoryGame = /** @class */ (function () {
     function MemoryGame() {
         this.gameBoard = document.getElementById('game-board');
-        this.cards = ['🐶', '🐶', '🐱', '🐱', '🐰', '🐰', '🐼', '🐼', '🦊', '🦊', '🐨', '🐨', '🐯', '🐯', '🦁', '🦁'];
+        this.cards = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        this.cards = __spreadArray(__spreadArray([], this.cards, true), this.cards, true);
         this.flippedCards = [];
         this.matchedPairs = 0;
-        this.isChecking = false;
         this.shuffleCards();
         this.renderCards();
-        this.addEventListeners();
     }
     MemoryGame.prototype.shuffleCards = function () {
         var _a;
@@ -18,54 +26,41 @@ var MemoryGame = /** @class */ (function () {
     };
     MemoryGame.prototype.renderCards = function () {
         var _this = this;
-        this.gameBoard.innerHTML = '';
         this.cards.forEach(function (card, index) {
             var cardElement = document.createElement('div');
             cardElement.classList.add('card');
             cardElement.dataset.index = index.toString();
-            cardElement.innerHTML = "\n                <div class=\"card-inner\">\n                    <div class=\"card-front\"></div>\n                    <div class=\"card-back\">".concat(card, "</div>\n                </div>\n            ");
+            cardElement.addEventListener('click', function () { return _this.flipCard(cardElement); });
             _this.gameBoard.appendChild(cardElement);
-        });
-    };
-    MemoryGame.prototype.addEventListeners = function () {
-        var _this = this;
-        this.gameBoard.addEventListener('click', function (e) {
-            var clickedCard = e.target.closest('.card');
-            if (clickedCard && !_this.isChecking) {
-                _this.flipCard(clickedCard);
-            }
         });
     };
     MemoryGame.prototype.flipCard = function (card) {
         var _this = this;
-        if (this.flippedCards.length < 2 && !card.classList.contains('flipped')) {
+        if (this.flippedCards.length < 2 && !this.flippedCards.some(function (c) { return c === card; }) && !card.classList.contains('flipped')) {
+            card.textContent = this.cards[parseInt(card.dataset.index)];
             card.classList.add('flipped');
             this.flippedCards.push(card);
             if (this.flippedCards.length === 2) {
-                this.isChecking = true;
                 setTimeout(function () { return _this.checkMatch(); }, 1000);
             }
         }
     };
     MemoryGame.prototype.checkMatch = function () {
-        var _this = this;
         var _a = this.flippedCards, card1 = _a[0], card2 = _a[1];
-        var isMatch = card1.querySelector('.card-back').textContent === card2.querySelector('.card-back').textContent;
+        var isMatch = this.cards[parseInt(card1.dataset.index)] === this.cards[parseInt(card2.dataset.index)];
         if (isMatch) {
             this.matchedPairs++;
-            this.flippedCards = [];
             if (this.matchedPairs === this.cards.length / 2) {
-                alert('Congratulations! You won!');
+                alert('Congratulations! You won the game!');
             }
         }
         else {
-            setTimeout(function () {
-                card1.classList.remove('flipped');
-                card2.classList.remove('flipped');
-                _this.flippedCards = [];
-            }, 1000);
+            card1.textContent = '';
+            card2.textContent = '';
+            card1.classList.remove('flipped');
+            card2.classList.remove('flipped');
         }
-        this.isChecking = false;
+        this.flippedCards = [];
     };
     return MemoryGame;
 }());

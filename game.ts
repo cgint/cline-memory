@@ -3,18 +3,16 @@ class MemoryGame {
     private cards: string[];
     private flippedCards: HTMLElement[];
     private matchedPairs: number;
-    private isChecking: boolean;
 
     constructor() {
         this.gameBoard = document.getElementById('game-board')!;
-        this.cards = ['🐶', '🐶', '🐱', '🐱', '🐰', '🐰', '🐼', '🐼', '🦊', '🦊', '🐨', '🐨', '🐯', '🐯', '🦁', '🦁'];
+        this.cards = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        this.cards = [...this.cards, ...this.cards];
         this.flippedCards = [];
         this.matchedPairs = 0;
-        this.isChecking = false;
 
         this.shuffleCards();
         this.renderCards();
-        this.addEventListeners();
     }
 
     private shuffleCards(): void {
@@ -25,37 +23,22 @@ class MemoryGame {
     }
 
     private renderCards(): void {
-        this.gameBoard.innerHTML = '';
         this.cards.forEach((card, index) => {
             const cardElement = document.createElement('div');
             cardElement.classList.add('card');
             cardElement.dataset.index = index.toString();
-            cardElement.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-front"></div>
-                    <div class="card-back">${card}</div>
-                </div>
-            `;
+            cardElement.addEventListener('click', () => this.flipCard(cardElement));
             this.gameBoard.appendChild(cardElement);
         });
     }
 
-    private addEventListeners(): void {
-        this.gameBoard.addEventListener('click', (e) => {
-            const clickedCard = (e.target as HTMLElement).closest('.card') as HTMLElement;
-            if (clickedCard && !this.isChecking) {
-                this.flipCard(clickedCard);
-            }
-        });
-    }
-
     private flipCard(card: HTMLElement): void {
-        if (this.flippedCards.length < 2 && !card.classList.contains('flipped')) {
+        if (this.flippedCards.length < 2 && !this.flippedCards.some(c => c === card) && !card.classList.contains('flipped')) {
+            card.textContent = this.cards[parseInt(card.dataset.index!)];
             card.classList.add('flipped');
             this.flippedCards.push(card);
 
             if (this.flippedCards.length === 2) {
-                this.isChecking = true;
                 setTimeout(() => this.checkMatch(), 1000);
             }
         }
@@ -63,23 +46,21 @@ class MemoryGame {
 
     private checkMatch(): void {
         const [card1, card2] = this.flippedCards;
-        const isMatch = card1.querySelector('.card-back')!.textContent === card2.querySelector('.card-back')!.textContent;
+        const isMatch = this.cards[parseInt(card1.dataset.index!)] === this.cards[parseInt(card2.dataset.index!)];
 
         if (isMatch) {
             this.matchedPairs++;
-            this.flippedCards = [];
             if (this.matchedPairs === this.cards.length / 2) {
-                alert('Congratulations! You won!');
+                alert('Congratulations! You won the game!');
             }
         } else {
-            setTimeout(() => {
-                card1.classList.remove('flipped');
-                card2.classList.remove('flipped');
-                this.flippedCards = [];
-            }, 1000);
+            card1.textContent = '';
+            card2.textContent = '';
+            card1.classList.remove('flipped');
+            card2.classList.remove('flipped');
         }
 
-        this.isChecking = false;
+        this.flippedCards = [];
     }
 }
 

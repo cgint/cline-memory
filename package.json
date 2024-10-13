@@ -1,14 +1,18 @@
 {
-  "name": "cline-test",
+  "name": "animal-memory-game",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A memory card game with animal emojis",
+  "main": "game.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc game.ts"
   },
-  "keywords": [],
+  "keywords": [
+    "game",
+    "memory",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "typescript": "^5.6.3"
   }
