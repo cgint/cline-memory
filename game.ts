@@ -23,12 +23,13 @@ class MemoryGame {
     }
 
     private renderCards(): void {
-        this.cards.forEach((card, index) => {
+        this.cards.forEach((_, index) => {
             const cardElement = document.createElement('div');
             cardElement.classList.add('card');
             cardElement.dataset.index = index.toString();
             cardElement.addEventListener('click', () => this.flipCard(cardElement));
             this.gameBoard.appendChild(cardElement);
+            this.gameBoard.appendChild("more-elements");
         });
     }
 
